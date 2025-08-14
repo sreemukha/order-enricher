@@ -43,7 +43,7 @@
         "status": 200,
         "headers": { "Content-Type": "application/json" },
         "jsonBody": {
-          "id": "PROD-B2",
+          "id": "PROD-C3",
           "name": "Wireless Keyboard",
           "price": 175.00,
           "category": "Accessories",
