@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: order-enricher
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/orders}
+    username: ${DB_USER:user}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # For dev; use flyway/liquibase in prod
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Base paths for the generated controller and API docs
+openapi:
+  orderEnricherAPI:
+    base-path: /v1
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# URLs for simulated external services
+clients:
+  customer-service:
+    url: ${CUSTOMER_SERVICE_URL:http://localhost:9090}
+  product-service:
+    url: ${PRODUCT_SERVICE_URL:http://localhost:9090}

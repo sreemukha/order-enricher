@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # The PostgreSQL Database
+  db:
+    image: postgres:14-alpine
+    container_name: order_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=orders
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # WireMock for simulating external services
+  wiremock:
+    image: wiremock/wiremock:latest
+    container_name: wiremock_server
+    ports:
+      - "9090:8080" # Map host 9090 to container 8080
+    volumes:
+      - ./wiremock:/home/wiremock # Mount our stubs
+
+  # Our Order Enricher Application
+  app:
+    container_name: order_enricher_app
+    build: . # Build from the Dockerfile in the current directory
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - wiremock
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/orders # Use service name 'db' as hostname
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - CUSTOMER_SERVICE_URL=http://wiremock:8080 # Use service name 'wiremock'
+      - PRODUCT_SERVICE_URL=http://wiremock:8080
+
+volumes:
+  postgres_data:
