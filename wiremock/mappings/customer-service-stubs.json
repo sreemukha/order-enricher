@@ -1,0 +1,41 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/customers/CUST-456"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "CUST-456",
+          "name": "John Doe",
+          "street": "123 Main St",
+          "zip": "12345",
+          "country": "USA"
+        }
+      }
+    },{
+      "request": {
+        "method": "GET",
+        "url": "/customers/CUST-123"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "CUST-123",
+          "name": "Jane Doe",
+          "street": "123 Main St",
+          "zip": "12345",
+          "country": "USA"
+        }
+      }
+    }
+  ]
+}

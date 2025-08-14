@@ -1,0 +1,24 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/customers/CUST-ERR"
+      },
+      "response": {
+        "status": 503,
+        "body": "Service Not Available"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/products/PROD-ERR"
+      },
+      "response": {
+        "status": 503,
+        "body": "Service Not Available"
+      }
+    }
+  ]
+}

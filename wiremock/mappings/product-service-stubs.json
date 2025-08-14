@@ -1,0 +1,55 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/products/PROD-A1"
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "id": "PROD-A1",
+          "name": "Laptop Pro",
+          "price": 1200.50,
+          "category": "Electronics",
+          "tags": ["computer", "powerful", "16GB RAM"]
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/products/PROD-B2"
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "id": "PROD-B2",
+          "name": "Wireless Mouse",
+          "price": 75.00,
+          "category": "Accessories",
+          "tags": ["ergonomic", "bluetooth"]
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/products/PROD-C3"
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "id": "PROD-B2",
+          "name": "Wireless Keyboard",
+          "price": 175.00,
+          "category": "Accessories",
+          "tags": ["mechanical", "bluetooth", "wired"]
+        }
+      }
+    }
+  ]
+}
