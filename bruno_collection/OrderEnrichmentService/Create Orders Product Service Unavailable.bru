@@ -1,0 +1,28 @@
+meta {
+  name: Create Orders Product Service Unavailable
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/v1/orders
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "orderId": "ORD-2025-0814-001",
+    "customerId": "CUST-456",
+    "productIds": ["PROD-ERR", "PROD-C3"],
+    "timestamp": "2025-08-14T00:35:00Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

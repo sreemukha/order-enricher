@@ -1,0 +1,15 @@
+meta {
+  name: Get Orders
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/v1/orders/ORD-2025-0814-001
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
