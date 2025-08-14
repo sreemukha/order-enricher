@@ -7,6 +7,7 @@ import com.teamviewer.orderenricher.api.model.Product;
 import com.teamviewer.orderenricher.client.CustomerServiceClient;
 import com.teamviewer.orderenricher.client.ProductServiceClient;
 import com.teamviewer.orderenricher.domain.EnrichedOrder;
+import com.teamviewer.orderenricher.domain.ProductInfo;
 import com.teamviewer.orderenricher.mapper.OrderMapper;
 import com.teamviewer.orderenricher.repository.EnrichedOrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -63,5 +64,27 @@ public class OrderService {
     public Optional<EnrichedOrderResponse> getOrderById(String orderId) {
         return orderRepository.findById(orderId)
                 .map(orderMapper::toApi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnrichedOrderResponse> getOrders(String customerId, String productId) {
+        if(customerId == null && productId == null) {
+            return orderRepository.findAll()
+                    .stream().map(orderMapper::toApi)
+                    .collect(Collectors.toList());
+        }
+
+        List<EnrichedOrder> enrichedOrders = orderRepository.findByCriteria(customerId, productId);
+        if(productId != null) {
+            enrichedOrders.forEach(eorder -> {
+                List<ProductInfo> filteredProducts = eorder.getProducts().stream()
+                        .filter(prod -> prod.getProductId().equals(productId)).toList();
+                eorder.setProducts(filteredProducts);
+            });
+        }
+
+        return  enrichedOrders.stream()
+                .map(orderMapper::toApi)
+                .collect(Collectors.toList());
     }
 }

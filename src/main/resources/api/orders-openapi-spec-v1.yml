@@ -5,6 +5,31 @@ info:
   description: API for submitting, enriching, and retrieving customer orders.
 paths:
   /orders:
+    get:
+      summary: Retrieve all enriched orders, with optional filtering
+      operationId: getOrders
+      parameters:
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "CUST-456"
+        - name: productId
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "PROD-A1"
+      responses:
+        '200':
+          description: A list of enriched orders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnrichedOrderResponse'
     post:
       summary: Submit a raw order for enrichment
       operationId: createOrder

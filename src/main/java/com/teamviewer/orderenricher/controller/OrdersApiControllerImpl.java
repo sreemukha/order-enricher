@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("${openapi.orderEnricherAPI.base-path:/v1}")
@@ -27,5 +30,10 @@ public class OrdersApiControllerImpl implements OrdersApi {
         return orderService.getOrderById(orderId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
+    }
+
+    @Override
+    public ResponseEntity<List<EnrichedOrderResponse>> getOrders(String customerId, String productId) {
+        return ResponseEntity.ok(orderService.getOrders(customerId, productId));
     }
 }
