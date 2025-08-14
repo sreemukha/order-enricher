@@ -28,10 +28,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
 
 		<!-- Database -->
 		<dependency>
@@ -119,6 +115,9 @@
 								<useSpringBoot3>true</useSpringBoot3>
 								<interfaceOnly>true</interfaceOnly>
 							</configOptions>
+							<typeMappings>
+								<typeMapping>Double=java.math.BigDecimal</typeMapping>
+							</typeMappings>
 						</configuration>
 					</execution>
 				</executions>
