@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # For dev; use flyway/liquibase in prod
+      ddl-auto: update # Could potentially use Liquibase to manage the DB
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
