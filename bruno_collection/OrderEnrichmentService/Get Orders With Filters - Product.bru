@@ -1,0 +1,19 @@
+meta {
+  name: Get Orders With Filters - Product
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:8080/v1/orders?productId=PROD-B2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  productId: PROD-B2
+}
+
+settings {
+  encodeUrl: true
+}
