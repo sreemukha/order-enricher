@@ -42,7 +42,7 @@ docker-compose up --build
 `--build` ensures the image is rebuilt if code changed.
 
 **4) Access the application healthcheck**  
-App: `http://localhost:8080/actuator/health`
+[http://localhost:8080/actuator/health]()
 
 ## API Usage
 Install Bruno and import the collection from the bruno_collection folder in the root directory.
