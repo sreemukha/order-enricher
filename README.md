@@ -16,7 +16,7 @@ This project is fully containerized. Requires Docker and Docker Compose to run t
 
 #### Prerequisites
 - Docker
-- Docker Compose
+- Docker Compose (will be included with Docker Desktop)
 - Maven (for building the project)
 - Java 21
 
