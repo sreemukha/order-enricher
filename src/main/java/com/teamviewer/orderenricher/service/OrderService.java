@@ -12,12 +12,11 @@ import com.teamviewer.orderenricher.mapper.OrderMapper;
 import com.teamviewer.orderenricher.repository.EnrichedOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,14 +32,15 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     @Transactional
+    @CacheEvict(value = "orders", allEntries = true) // Evict all entries in the 'orders' cache
     public EnrichedOrderResponse createOrder(OrderRequest orderRequest) {
+        log.info("Creating order and clearing cache...");
+
         log.info("Starting enrichment for orderId: {}", orderRequest.getOrderId());
 
-        // 1. Fetch customer data
         log.info("Fetching customer: {}", orderRequest.getCustomerId());
         Customer customer = customerClient.getCustomerById(orderRequest.getCustomerId());
 
-        // 2. Fetch all product data
         log.info("Fetching {} products", orderRequest.getProductIds().size());
         List<Product> products = orderRequest.getProductIds().stream()
                 .map(productId -> {
@@ -49,25 +49,27 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
 
-        // 3. Map to domain entity
         EnrichedOrder enrichedOrderEntity = orderMapper.toEntity(orderRequest, customer, products);
 
-        // 4. Persist to database
         orderRepository.save(enrichedOrderEntity);
         log.info("Successfully persisted enriched order: {}", enrichedOrderEntity.getOrderId());
 
-        // 5. Map to API response and return
         return orderMapper.toApi(enrichedOrderEntity);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "#orderId") // Cache result based on orderId
     public Optional<EnrichedOrderResponse> getOrderById(String orderId) {
+        log.info("Fetching order by ID from database: {}", orderId);
         return orderRepository.findById(orderId)
                 .map(orderMapper::toApi);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'customerId=' + #customerId + ';productId=' + #productId")
     public List<EnrichedOrderResponse> getOrders(String customerId, String productId) {
+        log.info("Fetching orders from the database by customerId: {} and productId: {}", customerId, productId);
+
         if(customerId == null && productId == null) {
             return orderRepository.findAll()
                     .stream().map(orderMapper::toApi)
