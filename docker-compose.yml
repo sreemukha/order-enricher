@@ -13,15 +13,25 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d orders"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # WireMock for simulating external services
+  redis:
+    image: redis:7-alpine
+    container_name: order_cache
+    ports:
+      - "6379:6379"
+
   wiremock:
     image: wiremock/wiremock:latest
     container_name: wiremock_server
     ports:
-      - "9090:8080" # Map host 9090 to container 8080
+      - "9090:8080"
     volumes:
-      - ./wiremock:/home/wiremock # Mount our stubs
+      - ./wiremock/mappings:/home/wiremock/mappings
 
   # Our Order Enricher Application
   app:
@@ -30,13 +40,19 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - wiremock
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      wiremock:
+        condition: service_started
     environment:
-      - DB_URL=jdbc:postgresql://db:5432/orders # Use service name 'db' as hostname
+      - DB_URL=jdbc:postgresql://db:5432/orders
       - DB_USER=user
       - DB_PASSWORD=password
-      - CUSTOMER_SERVICE_URL=http://wiremock:8080 # Use service name 'wiremock'
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CUSTOMER_SERVICE_URL=http://wiremock:8080
       - PRODUCT_SERVICE_URL=http://wiremock:8080
 
 volumes:
