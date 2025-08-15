@@ -76,42 +76,52 @@ curl "http://localhost:8080/v1/orders?productId=PROD-A1"
 
 ## Trade-offs and Architectural Decisions
 
-### 1) Synchronous (Blocking) vs. Asynchronous (Reactive)
+#### 1) Synchronous (Blocking) vs. Asynchronous (Reactive)
 **Decision:** Use a traditional synchronous, blocking model (Spring MVC, `RestTemplate`) instead of a reactive stack (WebFlux, `WebClient`).
 
 **Trade-off:**
 - **Pros:**
-    - Simpler to write, read, and debug.
-    - Well-understood one-thread-per-request model
-    - Sufficient for non–high-throughput services.
-- **Cons:** Less resource-efficient at very high load due to blocking I/O. For massive concurrency, a reactive approach would be preferable.
+  - Simpler to write, read, and debug.
+  - Well-understood one-thread-per-request model
+  - Sufficient for non–high-throughput services.
+- **Cons:** 
+  - Less resource-efficient at very high load due to blocking I/O. For massive concurrency, a reactive approach would be preferable.
 
-### 2) API-First Design with OpenAPI
+#### 2) API-First Design with OpenAPI
 **Decision:** Define contract first in `openapi.yml`. Use `openapi-generator-maven-plugin` to generate interfaces and models.
 
 **Trade-off:**
-- **Pro:** Clear contract. Enables parallel frontend/backend work. Ability to expose api-docs via swagger-ui for ease of use.
-- **Con:** Adds a build step and some verbosity.
+- **Pros:** 
+  - Clear contract. 
+  - Enables parallel frontend/backend work. 
+  - Ability to expose api-docs via swagger-ui for ease of use.
+- **Cons:** Adds a build step and some verbosity.
 
-### 3) Caching Strategy with Redis
+#### 3) Caching Strategy with Redis
 **Decision:** Use Redis caching on GET endpoints with Spring’s `@Cacheable`.
 
 **Trade-off:**
-- **Pro:** Major read-performance boost and reduces DB and external service load. Also, declarative via annotations.
-- **Con:** Adds infrastructure (Redis). Consistency concerns addressed via simple invalidation using `@CacheEvict(allEntries = true)` on writes-safe but potentially inefficient with frequent writes. Could evolve to more granular eviction.
+- **Pros:** 
+  - Major read-performance boost and reduces DB and external service load. Also, declarative via annotations.
+- **Cons:** 
+  - Added infrastructure (Redis). Consistency concerns addressed via simple invalidation using `@CacheEvict(allEntries = true)` on writes-safe but potentially inefficient with frequent writes. Could evolve to more granular eviction.
 
-### 4) Handling Nested Collections in JPA
+#### 4) Handling Nested Collections in JPA
 **Decision:** Store product tags (`List<String>`) as a single comma-separated `String` via a custom JPA `AttributeConverter`.
 
 **Trade-off:**
-- **Pro:** Avoids JPA limitation of nesting `@ElementCollection` inside another `@ElementCollection`. Also, keeps Java domain model clean.
-- **Con:** Prevents direct DB queries on individual tags. If needed, model tags as a proper entity with a one-to-many relationship.
+- **Pros:** 
+  - Avoids JPA limitation of nesting `@ElementCollection` inside another `@ElementCollection`. Also, keeps Java domain model clean.
+- **Cons:** 
+  - Prevents direct DB queries on individual tags. If needed, model tags can be a proper entity with a one-to-many relationship with the product entity.
 
-### 5) Database Schema Management
+#### 5) Database Schema Management
 **Decision:** Use Hibernate automatic schema generation (`ddl-auto: update`) instead of Liquibase/Flyway.
 
 **Trade-off:**
-- **Pro:** Fast and simple for development/prototyping. No setup needed and schema syncs automatically with entities.
-- **Con:**
-    - Not suitable for production as there is no version control, rollbacks are difficult, potential data loss on complex changes.
-        - Use Liquibase/Flyway for production-grade, versioned migrations.
+- **Pros:** 
+  - Fast and simple for development/prototyping. 
+  - No setup needed and schema syncs automatically with entities.
+- **Cons:**
+  - Not suitable for production as there is no version control, rollbacks are difficult, potential data loss on complex changes.
+  - Liquibase/Flyway can be used for production-grade, versioned migrations.
