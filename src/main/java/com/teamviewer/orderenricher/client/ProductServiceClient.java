@@ -4,6 +4,7 @@ import com.teamviewer.orderenricher.api.model.Product;
 import com.teamviewer.orderenricher.exception.ResourceNotFoundException;
 import com.teamviewer.orderenricher.exception.ServiceUnavailableException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -24,8 +25,11 @@ public class ProductServiceClient {
         String url = productServiceUrl + "/products/{id}";
         try {
             return restTemplate.getForObject(url, Product.class, productId);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceNotFoundException("Product with ID '" + productId + "' not found.");
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new ResourceNotFoundException("Product with ID '" + productId + "' not found.");
+            }
+            throw new ServiceUnavailableException("Product service returned a client error.", ex);
         } catch (RestClientException ex) {
             throw new ServiceUnavailableException("Product service is currently unavailable.", ex);
         }

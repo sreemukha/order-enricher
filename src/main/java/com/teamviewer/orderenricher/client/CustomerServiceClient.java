@@ -4,6 +4,7 @@ import com.teamviewer.orderenricher.api.model.Customer;
 import com.teamviewer.orderenricher.exception.ResourceNotFoundException;
 import com.teamviewer.orderenricher.exception.ServiceUnavailableException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -24,8 +25,11 @@ public class CustomerServiceClient {
         String url = customerServiceUrl + "/customers/{id}";
         try {
             return restTemplate.getForObject(url, Customer.class, customerId);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceNotFoundException("Customer with ID '" + customerId + "' not found.");
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new ResourceNotFoundException("Customer with ID '" + customerId + "' not found.");
+            }
+            throw new ServiceUnavailableException("Customer service returned a client error.", ex);
         } catch (RestClientException ex) {
             throw new ServiceUnavailableException("Customer service is currently unavailable.", ex);
         }
